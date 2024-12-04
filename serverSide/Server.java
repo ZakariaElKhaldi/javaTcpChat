@@ -1,38 +1,34 @@
-package socketChat.serverSide;
+package serverSide;
 
-import java.io.*;
 import java.net.*;
+import java.io.*;
 import java.util.*;
-import java.util.concurrent.*;
 
-public class Server {
-	private static final int PORT = 8000;
-	// Thread-safe set of client handlers
-		public static void main(String[] args) {
-		try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-			System.out.println("Chat Server is running on port " + PORT);
+public class Server{
 
-			// Counter to assign unique IDs to clients
-			int clientId = 0;
+   private ServerSocket serversocket;
+   private Socket socket;
 
-			while (true) {
-				Socket clientSocket = serverSocket.accept();
-				System.out.println("New client connected: " + clientSocket);
+   private BufferedReader reader;
+   private PrintWriter writer;
 
-				// Create a new client handler for each connected client
-				ClientHandler clientHandler = new ClientHandler(clientSocket, clientId++);
-				clients.add(clientHandler);
+   public Server(){
+      try{
+         serversocket = new ServerSocket(8000);
+         System.out.println("connecting...");
+         socket = serversocket.accept();
 
-				// Start the client handler in a thread pool
-				threadPool.execute(clientHandler);
-			}
-		} catch (IOException e) {
-			System.out.println("Server error: " + e.getMessage());
-			e.printStackTrace();
-		} finally {
-			// Shutdown the thread pool
-			threadPool.shutdown();
-		}
-	}
+         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+         System.out.println(reader.readLine()); 
 
-	
+         writer = new PrintWriter(socket.getOutputStream(),true);
+         writer.println("Your connected");
+      }catch(Exception e){
+         System.out.println(e.getStackTrace());
+      }
+   }
+
+   public static void main(String[] args) {
+      Server server = new Server();
+   }
+}
