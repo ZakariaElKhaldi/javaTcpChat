@@ -27,7 +27,15 @@ public class MessageSending implements Runnable{
 
    @Override
    public void run(){
-      writer.println(senderName+"> "+scanner.nextLine());
+      try{
+
+         while(true){writer.println(senderName+"> "+scanner.nextLine());}
+
+      }catch(IOException ex){
+
+         System.out.println(ex.getStackTrace());
+
+      }
    }
       
 } 

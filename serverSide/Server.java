@@ -4,31 +4,36 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
-public class Server{
+public class Server {
 
-   private ServerSocket serversocket;
-   private Socket socket;
+    private ServerSocket serverSocket;
+    private ArrayList<Socket> clientSockets;
 
-   private BufferedReader reader;
-   private PrintWriter writer;
+    public Server() {
+        try {
+            serverSocket = new ServerSocket(8000);
+            clientSockets = new ArrayList<>();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-   public Server(){
-      try{
-         serversocket = new ServerSocket(8000);
-         System.out.println("connecting...");
-         socket = serversocket.accept();
+    public void handleClients() {
+        Thread thread = new Thread(new ClientHandling(serverSocket, clientSockets));
+        thread.start();
+    }
 
-         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-         System.out.println(reader.readLine()); 
+    public void messaging() {
+        Thread readerThread = new Thread(new HandleInput(clientSockets, null)); // Pass null for now
+        readerThread.start();
+        Thread writerThread = new Thread(new HandleOutput(clientSockets, null, null)); // Pass null for now
+        writerThread.start();
+    }
 
-         writer = new PrintWriter(socket.getOutputStream(),true);
-         writer.println("Your connected");
-      }catch(Exception e){
-         System.out.println(e.getStackTrace());
-      }
-   }
-
-   public static void main(String[] args) {
-      Server server = new Server();
-   }
+    public static void main(String[] args) {
+        Server server = new Server();
+        server.handleClients(); // Start handling clients
+        server.messaging();    // Start messaging system
+    }
 }
+

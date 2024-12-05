@@ -20,7 +20,9 @@ public class MessageReciving implements Runnable{
    @Override
    public void run(){
       try{
-         System.out.println(reader.readLine());
+
+         while(true){System.out.println(reader.readLine());}
+
       }catch(IOException e){
          System.out.println(e.getStackTrace());
       }
